@@ -49,34 +49,34 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := test_stm
+BUILD_ARTIFACT_NAME := motor_test
 BUILD_ARTIFACT_EXTENSION := elf
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
-test_stm.elf \
+motor_test.elf \
 
 MAP_FILES += \
-test_stm.map \
+motor_test.map \
 
 SIZE_OUTPUT += \
 default.size.stdout \
 
 OBJDUMP_LIST += \
-test_stm.list \
+motor_test.list \
 
 
 # All Target
 all: main-build
 
 # Main-build Target
-main-build: test_stm.elf secondary-outputs
+main-build: motor_test.elf secondary-outputs
 
 # Tool invocations
-test_stm.elf test_stm.map: $(OBJS) $(USER_OBJS) /home/syh/STM32CubeIDE/workspace/test/test_stm/STM32F103RCTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-g++ -o "test_stm.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"/home/syh/STM32CubeIDE/workspace/test/test_stm/STM32F103RCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="test_stm.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+motor_test.elf motor_test.map: $(OBJS) $(USER_OBJS) /home/syh/git_ws/robot-repo-1/stm32/stm32_syh/motor_test/STM32F103RCTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-g++ -o "motor_test.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"/home/syh/git_ws/robot-repo-1/stm32/stm32_syh/motor_test/STM32F103RCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="motor_test.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -85,14 +85,14 @@ default.size.stdout: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 	@echo 'Finished building: $@'
 	@echo ' '
 
-test_stm.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "test_stm.list"
+motor_test.list: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-objdump -h -S $(EXECUTABLES) > "motor_test.list"
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) default.size.stdout test_stm.elf test_stm.list test_stm.map
+	-$(RM) default.size.stdout motor_test.elf motor_test.list motor_test.map
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST)
