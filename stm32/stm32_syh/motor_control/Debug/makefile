@@ -60,8 +60,8 @@ all: main-build
 main-build: motor_control.elf secondary-outputs
 
 # Tool invocations
-motor_control.elf motor_control.map: $(OBJS) $(USER_OBJS) /home/syh/STM32CubeIDE/workspace/test/motor_control/STM32F103RCTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "motor_control.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"/home/syh/STM32CubeIDE/workspace/test/motor_control/STM32F103RCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="motor_control.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+motor_control.elf motor_control.map: $(OBJS) $(USER_OBJS) /home/syh/git_ws/robot-repo-1/stm32/stm32_syh/motor_control/STM32F103RCTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "motor_control.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"/home/syh/git_ws/robot-repo-1/stm32/stm32_syh/motor_control/STM32F103RCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="motor_control.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

@@ -23,7 +23,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "stdio.h"
+#include "motor_encoder.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,7 +45,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+encoder_instance enc_instance;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -55,15 +56,28 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint32_t counter = 0;
+uint16_t counter = 0;
 
-int16_t count = 0;
+int16_t encoder_velocity;
+int32_t encoder_position;
+
+
+//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+//{
+//	counter = __HAL_TIM_GET_COUNTER(&htim4);
+//
+//	update_encoder(&enc_instance, &htim4);
+//	encoder_position = enc_instance.position;
+//	encoder_velocity = enc_instance.velocity;
+//}
 
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
-	counter = __HAL_TIM_GET_COUNTER(htim);
+	counter = __HAL_TIM_GET_COUNTER(&htim4);
 
-	count = (int16_t)counter;
+	update_encoder(&enc_instance, &htim4);
+	encoder_position = enc_instance.position;
+	encoder_velocity = enc_instance.velocity;
 }
 /* USER CODE END 0 */
 
@@ -103,7 +117,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HAL_TIM_Encoder_Start_IT(&htim4, TIM_CHANNEL_ALL);
   HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_2);  // start the pwm1
-  HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_1);  // start the pwm1
+  //HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_1);  // start the pwm1
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -113,20 +127,14 @@ int main(void)
 	  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 1);
 	  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 0);
 
-	  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 1);
-	  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
-
 	  HAL_Delay(2000);
 
 	  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
 	  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 1);
 
-	  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 0);
-	  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
-
 	  HAL_Delay(2000);
-	  __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_1, 200);
-	  __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_2, 200);
+
+	  __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_2, 500);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

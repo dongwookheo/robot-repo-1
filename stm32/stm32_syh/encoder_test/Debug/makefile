@@ -60,8 +60,8 @@ all: main-build
 main-build: encoder_test.elf secondary-outputs
 
 # Tool invocations
-encoder_test.elf encoder_test.map: $(OBJS) $(USER_OBJS) /home/syh/STM32CubeIDE/workspace/test/encoder_test/STM32F103RCTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "encoder_test.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"/home/syh/STM32CubeIDE/workspace/test/encoder_test/STM32F103RCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="encoder_test.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+encoder_test.elf encoder_test.map: $(OBJS) $(USER_OBJS) /home/syh/git_ws/robot-repo-1/stm32/stm32_syh/encoder_test/STM32F103RCTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "encoder_test.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m3 -T"/home/syh/git_ws/robot-repo-1/stm32/stm32_syh/encoder_test/STM32F103RCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="encoder_test.map" -Wl,--gc-sections -static --specs=nano.specs -mfloat-abi=soft -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
