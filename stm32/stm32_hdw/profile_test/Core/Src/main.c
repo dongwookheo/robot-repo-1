@@ -108,7 +108,7 @@ int main(void)
   float_t fre[500];
   uint16_t period[500];
   float_t len = 500.0;
-  float_t fre_max = 1000.0;
+  float_t fre_max = 500.0;
   float_t fre_min = 0.0;
   float_t flexible = 4;
 
@@ -120,8 +120,18 @@ int main(void)
 
   while (1)
   {
+	// MD
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 1);
 	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
+	// MC
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 1);
+	// MB
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 1);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 0);
+	// MA
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0);
+	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 1);
 
 	for(int i=0; i<len; i++)
 	{
@@ -131,6 +141,9 @@ int main(void)
 		period[i] = (uint16_t)(timer_freq/fre[i]);
 
 		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, (int)fre[i]);
+		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, (int)fre[i]);
+		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, (int)fre[i]);
+		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_4, (int)fre[i]);
 		HAL_Delay(1);
 	}
 
@@ -139,6 +152,9 @@ int main(void)
 	for(int i=len-1; i>=0; i--)
 	{
 		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, (int)fre[i]);
+		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, (int)fre[i]);
+		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, (int)fre[i]);
+		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_4, (int)fre[i]);
 		HAL_Delay(1);
 	}
 
