@@ -65,8 +65,21 @@ static void MX_TIM5_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint16_t counter = 0;
-short count = 0;
+uint16_t counterA = 0;
+uint16_t counterB = 0;
+uint16_t counterC = 0;
+uint16_t counterD = 0;
+
+uint16_t directionA = 0;
+uint16_t directionB = 0;
+uint16_t directionC = 0;
+uint16_t directionD = 0;
+
+int16_t countA = 0;
+int16_t countB = 0;
+int16_t countC = 0;
+int16_t countD = 0;
+
 int16_t encoder_velocity;
 int32_t encoder_position;
 
@@ -80,15 +93,29 @@ int32_t encoder_position;
 //	encoder_velocity = enc_instance.velocity;
 //}
 
-void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	counter = __HAL_TIM_GET_COUNTER(&htim4);
-	count = (short)counter;
-	update_encoder(&enc_instance, &htim4);
-	encoder_position = enc_instance.position;
-	encoder_velocity = enc_instance.velocity;
+	counterA = __HAL_TIM_GET_COUNTER(&htim2);
+	counterB = __HAL_TIM_GET_COUNTER(&htim3);
+	counterC = __HAL_TIM_GET_COUNTER(&htim4);
+	counterD = __HAL_TIM_GET_COUNTER(&htim5);
+
+	countA = (int16_t)counterA;
+	countB = (int16_t)counterB;
+	countC = (int16_t)counterC;
+	countD = (int16_t)counterD;
+
+	directionA = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim2);
+	directionB = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim3);
+	directionC = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim4);
+	directionD = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim5);
+//	count = (short)counter;
+//	update_encoder(&enc_instance, &htim4);
+//	encoder_position = enc_instance.position;
+//	encoder_velocity = enc_instance.velocity;
 }
 
+//void HAL_TIM_IC_CaptureCallback
 //void HAL_TIM_PeriodElapsedCallback
 /* USER CODE END 0 */
 
@@ -126,7 +153,10 @@ int main(void)
   MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
   //uint8_t str[] = "Hello, World!\n\r";
+  HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_ALL);
+  HAL_TIM_Encoder_Start_IT(&htim3, TIM_CHANNEL_ALL);
   HAL_TIM_Encoder_Start_IT(&htim4, TIM_CHANNEL_ALL);
+  HAL_TIM_Encoder_Start_IT(&htim5, TIM_CHANNEL_ALL);
   /* USER CODE END 2 */
 
   /* Infinite loop */
