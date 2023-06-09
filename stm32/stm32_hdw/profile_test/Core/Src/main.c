@@ -23,7 +23,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "stm32f1xx_hal.h"
+#include "stdlib.h"
+#include <math.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,20 +46,20 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-// Function to initialize the GPIO pin for LED control
-
+void delay(uint16_t ms)
+{
+	__HAL_TIM_SET_COUNTER(&htim1, 0);
+	while(__HAL_TIM_GET_COUNTER(&htim1) < ms);
+}
 /* USER CODE END 0 */
 
 /**
@@ -89,15 +91,65 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_TIM8_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
 
+  HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_1);  // start the pwm md
+  HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_2);  // start the pwm mc
+  HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_3);  // start the pwm mb
+  HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_4);  // start the pwm ma
+
+//  HAL_TIM_Base_Start(&htim1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+  float_t fre[500];
+  uint16_t period[500];
+  float_t len = 500.0;
+  float_t fre_max = 1000.0;
+  float_t fre_min = 0.0;
+  float_t flexible = 4;
+
+  float_t deno;
+  float_t melo;
+  float_t delt = fre_max - fre_min;
+
+  float_t timer_freq = 1000000.0;
+
   while (1)
   {
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 1);
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
 
+	for(int i=0; i<len; i++)
+	{
+		melo = flexible * (i - len/2) / (len/2);
+		deno = 1.0 / (1+expf(-melo));
+		fre[i] = delt * deno + fre_min;
+		period[i] = (uint16_t)(timer_freq/fre[i]);
+
+		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, (int)fre[i]);
+		HAL_Delay(1);
+	}
+
+	HAL_Delay(1000-1);
+
+	for(int i=len-1; i>=0; i--)
+	{
+		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, (int)fre[i]);
+		HAL_Delay(1);
+	}
+
+	HAL_Delay(1000-1);
+
+
+
+//	  __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, 200);
+//	  __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, 200);
+//	  __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, 200);
+//	  __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_4, 200);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -142,10 +194,19 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+  HAL_RCC_MCOConfig(RCC_MCO, RCC_MCO1SOURCE_HSE, RCC_MCODIV_1);
 }
 
 /* USER CODE BEGIN 4 */
+void softwareDelay(uint32_t milliseconds)
+{
+	volatile uint32_t delay = milliseconds * 1000;
 
+	while(delay > 0)
+	{
+		delay--;
+	}
+}
 /* USER CODE END 4 */
 
 /**
