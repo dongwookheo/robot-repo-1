@@ -47,6 +47,7 @@ TIM_HandleTypeDef htim2;
 TIM_HandleTypeDef htim3;
 TIM_HandleTypeDef htim4;
 TIM_HandleTypeDef htim5;
+TIM_HandleTypeDef htim6;
 
 /* USER CODE BEGIN PV */
 encoder_instance enc_instance;
@@ -59,6 +60,7 @@ static void MX_TIM2_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_TIM4_Init(void);
 static void MX_TIM5_Init(void);
+static void MX_TIM6_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -84,36 +86,41 @@ int16_t encoder_velocity;
 int32_t encoder_position;
 
 
-//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-//{
-//	counter = __HAL_TIM_GET_COUNTER(&htim4);
-//	count = (short)counter;
-//	update_encoder(&enc_instance, &htim4);
-//	encoder_position = enc_instance.position;
-//	encoder_velocity = enc_instance.velocity;
-//}
-
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	counterA = __HAL_TIM_GET_COUNTER(&htim2);
-	counterB = __HAL_TIM_GET_COUNTER(&htim3);
-	counterC = __HAL_TIM_GET_COUNTER(&htim4);
-	counterD = __HAL_TIM_GET_COUNTER(&htim5);
-
-	countA = (int16_t)counterA;
-	countB = (int16_t)counterB;
-	countC = (int16_t)counterC;
-	countD = (int16_t)counterD;
-
-	directionA = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim2);
-	directionB = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim3);
-	directionC = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim4);
-	directionD = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim5);
-//	count = (short)counter;
-//	update_encoder(&enc_instance, &htim4);
-//	encoder_position = enc_instance.position;
-//	encoder_velocity = enc_instance.velocity;
+	if (htim->Instance == TIM6){
+		counterC = __HAL_TIM_GET_COUNTER(&htim4);
+		countC = (short)counterC;
+		update_encoder(&enc_instance, &htim4);
+		encoder_position = enc_instance.position;
+		encoder_velocity = enc_instance.velocity;
+	}
 }
+
+//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+//{
+//	if (htim->Instance == TIM6){
+//
+//		counterA = __HAL_TIM_GET_COUNTER(&htim2);
+//		counterB = __HAL_TIM_GET_COUNTER(&htim3);
+//		counterC = __HAL_TIM_GET_COUNTER(&htim4);
+//		counterD = __HAL_TIM_GET_COUNTER(&htim5);
+//
+//		countA = (int16_t)counterA;
+//		countB = (int16_t)counterB;
+//		countC = (int16_t)counterC;
+//		countD = (int16_t)counterD;
+//
+//		directionA = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim2);
+//		directionB = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim3);
+//		directionC = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim4);
+//		directionD = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim5);
+//	}
+////	count = (short)counter;
+////	update_encoder(&enc_instance, &htim4);
+////	encoder_position = enc_instance.position;
+////	encoder_velocity = enc_instance.velocity;
+//}
 
 //void HAL_TIM_IC_CaptureCallback
 //void HAL_TIM_PeriodElapsedCallback
@@ -151,12 +158,17 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM4_Init();
   MX_TIM5_Init();
+  MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
   //uint8_t str[] = "Hello, World!\n\r";
   HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_ALL);
   HAL_TIM_Encoder_Start_IT(&htim3, TIM_CHANNEL_ALL);
   HAL_TIM_Encoder_Start_IT(&htim4, TIM_CHANNEL_ALL);
   HAL_TIM_Encoder_Start_IT(&htim5, TIM_CHANNEL_ALL);
+
+  HAL_TIM_Base_Start_IT(&htim6);
+//  __HAL_TIM_CLEAR_IT(&htim6,TIM_IT_UPDATE);
+//  __HAL_TIM_ENABLE_IT(&htim6,TIM_IT_UPDATE);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -404,6 +416,44 @@ static void MX_TIM5_Init(void)
   /* USER CODE BEGIN TIM5_Init 2 */
 
   /* USER CODE END TIM5_Init 2 */
+
+}
+
+/**
+  * @brief TIM6 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM6_Init(void)
+{
+
+  /* USER CODE BEGIN TIM6_Init 0 */
+
+  /* USER CODE END TIM6_Init 0 */
+
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM6_Init 1 */
+
+  /* USER CODE END TIM6_Init 1 */
+  htim6.Instance = TIM6;
+  htim6.Init.Prescaler = 7200-1;
+  htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim6.Init.Period = 10000-1;
+  htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim6) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim6, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM6_Init 2 */
+
+  /* USER CODE END TIM6_Init 2 */
 
 }
 

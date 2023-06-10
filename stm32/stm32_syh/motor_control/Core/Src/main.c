@@ -47,7 +47,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-encoder_instance enc_instance;
+encoder_instance enc_instanceC;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -58,10 +58,9 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint16_t counter = 0;
 
-int16_t encoder_velocity;
-int32_t encoder_position;
+int16_t encoder_velocityC;
+int32_t encoder_positionC;
 
 uint16_t counterA = 0;
 uint16_t counterB = 0;
@@ -82,22 +81,37 @@ uint16_t directionD = 0;
 //	encoder_velocity = enc_instance.velocity;
 //}
 
+//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+//{
+//	if (htim->Instance == TIM6){
+//		counterC = __HAL_TIM_GET_COUNTER(&htim4);
+//		//countC = (short)counterC;
+//		update_encoder(&enc_instance, &htim4);
+//		encoder_position = enc_instance.position;
+//		encoder_velocity = enc_instance.velocity;
+//	}
+//}
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	counterA = __HAL_TIM_GET_COUNTER(&htim2);
-	counterB = __HAL_TIM_GET_COUNTER(&htim3);
-	counterC = __HAL_TIM_GET_COUNTER(&htim4);
-	counterD = __HAL_TIM_GET_COUNTER(&htim5);
 
-	directionA = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim2);
-	directionB = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim3);
-	directionC = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim4);
-	directionD = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim5);
-//	counter = __HAL_TIM_GET_COUNTER(&htim4);
-//
-//	update_encoder(&enc_instance, &htim4);
-//	encoder_position = enc_instance.position;
-//	encoder_velocity = enc_instance.velocity;
+	if (htim->Instance == TIM6){
+
+
+		counterA = __HAL_TIM_GET_COUNTER(&htim2);
+		counterB = __HAL_TIM_GET_COUNTER(&htim3);
+		counterC = __HAL_TIM_GET_COUNTER(&htim4);
+		counterD = __HAL_TIM_GET_COUNTER(&htim5);
+
+		directionA = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim2);
+		directionB = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim3);
+		directionC = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim4);
+		directionD = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim5);
+
+		update_encoder(&enc_instanceC, &htim4);
+		encoder_positionC = enc_instanceC.position;
+		encoder_velocityC = enc_instanceC.velocity;
+	}
 }
 
 //void HAL_TIM_IC_CaptureCallback
@@ -137,6 +151,7 @@ int main(void)
   MX_TIM4_Init();
   MX_TIM5_Init();
   MX_TIM8_Init();
+  MX_TIM6_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_ALL);
   HAL_TIM_Encoder_Start_IT(&htim3, TIM_CHANNEL_ALL);
@@ -147,6 +162,8 @@ int main(void)
   HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_2);  // start the pwm mc
   HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_3);  // start the pwm mb
   HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_4);  // start the pwm ma
+
+  HAL_TIM_Base_Start_IT(&htim6);
   //HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_1);  // start the pwm1
   /* USER CODE END 2 */
 
@@ -181,32 +198,33 @@ int main(void)
 	  	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0);
 	  	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 1);
 
-	  	for(int i=0; i<len; i++)
-	  	{
-	  		melo = flexible * (i - len/2) / (len/2);
-	  		deno = 1.0 / (1+expf(-melo));
-	  		fre[i] = delt * deno + fre_min;
-	  		// period[i] = (uint16_t)(timer_freq/fre[i]);
-
-	  		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, (int)fre[i]);
-	  		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, (int)fre[i]);
-	  		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, (int)fre[i]);
-	  		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_4, (int)fre[i]);
-	  		HAL_Delay(1);
-	  	}
-
-	  	HAL_Delay(1000-1);
-
-	  	for(int i=len-1; i>=0; i--)
-	  	{
-	  		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, (int)fre[i]);
-	  		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, (int)fre[i]);
-	  		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, (int)fre[i]);
-	  		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_4, (int)fre[i]);
-	  		HAL_Delay(1);
-	  	}
-
-	  	HAL_Delay(1000-1);
+//	  	for(int i=0; i<len; i++)
+//	  	{
+//	  		melo = flexible * (i - len/2) / (len/2);
+//	  		deno = 1.0 / (1+expf(-melo));
+//	  		fre[i] = delt * deno + fre_min;
+//	  		// period[i] = (uint16_t)(timer_freq/fre[i]);
+//
+//	  		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, (int)fre[i]);
+//	  		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, (int)fre[i]);
+//	  		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, (int)fre[i]);
+//	  		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_4, (int)fre[i]);
+//	  		HAL_Delay(1);
+//	  	}
+//
+//	  	HAL_Delay(1000-1);
+//
+//	  	for(int i=len-1; i>=0; i--)
+//	  	{
+//	  		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, (int)fre[i]);
+//	  		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, (int)fre[i]);
+//	  		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, (int)fre[i]);
+//	  		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_4, (int)fre[i]);
+//	  		HAL_Delay(1);
+//	  	}
+//
+//	  	HAL_Delay(1000-1);
+	  	__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, 600);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
