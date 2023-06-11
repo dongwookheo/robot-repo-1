@@ -29,7 +29,7 @@ void update_encoder(encoder_instance *encoder_value, TIM_HandleTypeDef *htim)
 			if (__HAL_TIM_IS_TIM_COUNTING_DOWN(htim))
 			{
 				encoder_value ->velocity = (-encoder_value ->last_counter_value -
-						(__HAL_TIM_GET_AUTORELOAD(htim)-temp_counter))*2*pi;
+						(__HAL_TIM_GET_AUTORELOAD(htim)-temp_counter));
 			}
 			else
 			{
@@ -44,7 +44,8 @@ void update_encoder(encoder_instance *encoder_value, TIM_HandleTypeDef *htim)
 			}
 			else
 			{
-				encoder_value ->velocity = temp_counter + (__HAL_TIM_GET_AUTORELOAD(htim) - encoder_value ->last_counter_value);
+				encoder_value ->velocity = temp_counter + (__HAL_TIM_GET_AUTORELOAD(htim) -
+						encoder_value ->last_counter_value);
 			}
 		}
 	}

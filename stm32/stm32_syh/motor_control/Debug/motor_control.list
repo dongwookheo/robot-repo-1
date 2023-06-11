@@ -27,23 +27,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000029  00000000  00000000  0002000c  2**0
                   CONTENTS, READONLY
- 12 .debug_info   000096cd  00000000  00000000  00020035  2**0
+ 12 .debug_info   000096e2  00000000  00000000  00020035  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00001920  00000000  00000000  00029702  2**0
+ 13 .debug_abbrev 00001920  00000000  00000000  00029717  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 000009e8  00000000  00000000  0002b028  2**3
+ 14 .debug_aranges 000009e8  00000000  00000000  0002b038  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_ranges 00000910  00000000  00000000  0002ba10  2**3
+ 15 .debug_ranges 00000910  00000000  00000000  0002ba20  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  000198be  00000000  00000000  0002c320  2**0
+ 16 .debug_macro  00019969  00000000  00000000  0002c330  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   0000ae2e  00000000  00000000  00045bde  2**0
+ 17 .debug_line   0000af5c  00000000  00000000  00045c99  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    00096b2a  00000000  00000000  00050a0c  2**0
+ 18 .debug_str    00096b2a  00000000  00000000  00050bf5  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000050  00000000  00000000  000e7536  2**0
+ 19 .comment      00000050  00000000  00000000  000e771f  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00002838  00000000  00000000  000e7588  2**2
+ 20 .debug_frame  00002838  00000000  00000000  000e7770  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -692,13 +692,13 @@ int main(void)
  8000708:	481b      	ldr	r0, [pc, #108]	; (8000778 <main+0x124>)
  800070a:	f001 f88f 	bl	800182c <HAL_GPIO_WritePin>
 	  	// MC + 방향
-	  	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 1);
- 800070e:	2201      	movs	r2, #1
+	  	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
+ 800070e:	2200      	movs	r2, #0
  8000710:	2120      	movs	r1, #32
  8000712:	481a      	ldr	r0, [pc, #104]	; (800077c <main+0x128>)
  8000714:	f001 f88a 	bl	800182c <HAL_GPIO_WritePin>
-	  	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 0);
- 8000718:	2200      	movs	r2, #0
+	  	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 1);
+ 8000718:	2201      	movs	r2, #1
  800071a:	2110      	movs	r1, #16
  800071c:	4817      	ldr	r0, [pc, #92]	; (800077c <main+0x128>)
  800071e:	f001 f885 	bl	800182c <HAL_GPIO_WritePin>
@@ -871,9 +871,9 @@ __STATIC_FORCEINLINE void __disable_irq(void)
  8000816:	e7fe      	b.n	8000816 <Error_Handler+0x8>
 
 08000818 <update_encoder>:
- *      Author: syh
  */
 #include "motor_encoder.h"
+#include <math.h>
 
 void update_encoder(encoder_instance *encoder_value, TIM_HandleTypeDef *htim)
 {
@@ -936,7 +936,8 @@ void update_encoder(encoder_instance *encoder_value, TIM_HandleTypeDef *htim)
  8000868:	2b10      	cmp	r3, #16
  800086a:	d110      	bne.n	800088e <update_encoder+0x76>
 			{
-				encoder_value ->velocity = -encoder_value ->last_counter_value -(__HAL_TIM_GET_AUTORELOAD(htim)-temp_counter);
+				encoder_value ->velocity = (-encoder_value ->last_counter_value -
+						(__HAL_TIM_GET_AUTORELOAD(htim)-temp_counter));
  800086c:	68fb      	ldr	r3, [r7, #12]
  800086e:	b29a      	uxth	r2, r3
  8000870:	683b      	ldr	r3, [r7, #0]
@@ -945,6 +946,7 @@ void update_encoder(encoder_instance *encoder_value, TIM_HandleTypeDef *htim)
  8000876:	b29b      	uxth	r3, r3
  8000878:	1ad3      	subs	r3, r2, r3
  800087a:	b29a      	uxth	r2, r3
+				encoder_value ->velocity = (-encoder_value ->last_counter_value -
  800087c:	687b      	ldr	r3, [r7, #4]
  800087e:	691b      	ldr	r3, [r3, #16]
  8000880:	b29b      	uxth	r3, r3
@@ -996,13 +998,15 @@ void update_encoder(encoder_instance *encoder_value, TIM_HandleTypeDef *htim)
 			}
 			else
 			{
-				encoder_value ->velocity = temp_counter + (__HAL_TIM_GET_AUTORELOAD(htim) - encoder_value ->last_counter_value);
+				encoder_value ->velocity = temp_counter + (__HAL_TIM_GET_AUTORELOAD(htim) -
  80008c8:	683b      	ldr	r3, [r7, #0]
  80008ca:	681b      	ldr	r3, [r3, #0]
  80008cc:	6adb      	ldr	r3, [r3, #44]	; 0x2c
  80008ce:	b29a      	uxth	r2, r3
+						encoder_value ->last_counter_value);
  80008d0:	687b      	ldr	r3, [r7, #4]
  80008d2:	691b      	ldr	r3, [r3, #16]
+				encoder_value ->velocity = temp_counter + (__HAL_TIM_GET_AUTORELOAD(htim) -
  80008d4:	b29b      	uxth	r3, r3
  80008d6:	1ad3      	subs	r3, r2, r3
  80008d8:	b29a      	uxth	r2, r3

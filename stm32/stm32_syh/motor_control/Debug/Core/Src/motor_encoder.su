@@ -1,2 +1,2 @@
-../Core/Src/motor_encoder.c:9:6:update_encoder	40	static
-../Core/Src/motor_encoder.c:52:6:reset_encoder	16	static
+../Core/Src/motor_encoder.c:10:6:update_encoder	40	static
+../Core/Src/motor_encoder.c:55:6:reset_encoder	16	static
