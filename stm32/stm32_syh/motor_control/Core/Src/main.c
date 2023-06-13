@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "tim.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -27,6 +28,8 @@
 #include "stdlib.h"
 #include "motor_encoder.h"
 #include <math.h>
+#include <string.h>
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -48,11 +51,27 @@
 
 /* USER CODE BEGIN PV */
 encoder_instance enc_instanceC;
+
+uint8_t g_rx_buf[256] = {0, };
+uint8_t g_recv_data[256] = {0, };
+uint8_t g_rx_index = 0;
+uint8_t data_len = 0;
+
+int16_t g_ma_motor_speed = 0;
+int16_t g_mb_motor_speed = 0;
+int16_t g_mc_motor_speed = 0;
+int16_t g_md_motor_speed = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
+
+uint8_t process_protocol(void);
+void send_current_state(void);
+void send_resonse_protocol(uint8_t);
+uint8_t calc_checksum(uint8_t*, uint8_t);
 
 /* USER CODE END PFP */
 
@@ -71,46 +90,80 @@ uint16_t directionB = 0;
 uint16_t directionC = 0;
 uint16_t directionD = 0;
 
-
-//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-//{
-//	counter = __HAL_TIM_GET_COUNTER(&htim4);
-//
-//	update_encoder(&enc_instance, &htim4);
-//	encoder_position = enc_instance.position;
-//	encoder_velocity = enc_instance.velocity;
-//}
-
-//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-//{
-//	if (htim->Instance == TIM6){
-//		counterC = __HAL_TIM_GET_COUNTER(&htim4);
-//		//countC = (short)counterC;
-//		update_encoder(&enc_instance, &htim4);
-//		encoder_position = enc_instance.position;
-//		encoder_velocity = enc_instance.velocity;
-//	}
-//}
-
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	if (huart == &huart1)
+	{
+		HAL_UART_Receive_IT(&huart1, &g_rx_buf[g_rx_index], 1);
+		g_rx_index++;
+	}
+}
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 
 	if (htim->Instance == TIM6){
 
+		if(g_ma_motor_speed >= 0)
+		{
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 1);
+			__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_4, g_ma_motor_speed);
+		}
+		else {
+			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 0);
+			__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_4, -1 * g_ma_motor_speed);
+		}
 
-		counterA = __HAL_TIM_GET_COUNTER(&htim2);
-		counterB = __HAL_TIM_GET_COUNTER(&htim3);
-		counterC = __HAL_TIM_GET_COUNTER(&htim4);
-		counterD = __HAL_TIM_GET_COUNTER(&htim5);
+		if(g_mb_motor_speed >= 0)
+		{
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 0);
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 1);
+			__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, g_ma_motor_speed);
+		}
+		else {
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 1);
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 0);
+			__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, -1 * g_ma_motor_speed);
+		}
 
-		directionA = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim2);
-		directionB = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim3);
-		directionC = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim4);
-		directionD = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim5);
+		if(g_mc_motor_speed >= 0)
+		{
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 1);
+			__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, g_ma_motor_speed);
+		}
+		else {
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 1);
+			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 0);
+			__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, -1 * g_ma_motor_speed);
+		}
 
-		update_encoder(&enc_instanceC, &htim4);
-		encoder_positionC = enc_instanceC.position;
-		encoder_velocityC = enc_instanceC.velocity;
+		if(g_md_motor_speed >= 0)
+		{
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 0);
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
+			__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, g_ma_motor_speed);
+		}
+		else {
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 1);
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
+			__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, -1 * g_ma_motor_speed);
+		}
+
+//		counterA = __HAL_TIM_GET_COUNTER(&htim2);
+//		counterB = __HAL_TIM_GET_COUNTER(&htim3);
+//		counterC = __HAL_TIM_GET_COUNTER(&htim4);
+//		counterD = __HAL_TIM_GET_COUNTER(&htim5);
+//
+//		directionA = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim2);
+//		directionB = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim3);
+//		directionC = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim4);
+//		directionD = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim5);
+//
+//		update_encoder(&enc_instanceC, &htim4);
+//		encoder_positionC = enc_instanceC.position;
+//		encoder_velocityC = enc_instanceC.velocity;
 	}
 }
 
@@ -152,6 +205,7 @@ int main(void)
   MX_TIM5_Init();
   MX_TIM8_Init();
   MX_TIM6_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_ALL);
   HAL_TIM_Encoder_Start_IT(&htim3, TIM_CHANNEL_ALL);
@@ -164,209 +218,41 @@ int main(void)
   HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_4);  // start the pwm ma
 
   HAL_TIM_Base_Start_IT(&htim6);
-  //HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_1);  // start the pwm1
+
+  __HAL_UART_ENABLE_IT(&huart1,UART_IT_RXNE);
+  HAL_UART_Receive_IT(&huart1, &g_rx_buf[g_rx_index], 1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  float_t fre[500];
-  // uint16_t period[500];
-  float_t len = 500.0;
-  float_t fre_max = 500.0;
-  float_t fre_min = 0.0;
-  float_t flexible = 4;
-
-  float_t deno;
-  float_t melo;
-  float_t delt = fre_max - fre_min;
-
-  float_t timer_freq = 1000000.0;
-
   while (1)
   {
-
-
-
-	//-------------------------------------------------
-	// 전진
-	// MD - 방향
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 1);
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
-//	// MC + 방향
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 1);
-//	// MB - 방향
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 1);
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 0);
-//	// MA + 방향
-//	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0);
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 1);
-
-
-	//-----------------------------------------------
-	// 후진
-//	// MD + 방향
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 0);
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
-//	// MC - 방향
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 1);
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 0);
-//	// MB + 방향
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 0);
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 1);
-//	// MA - 방향
-//	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1);
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 0);
-	//-----------------------------------------------
-	// 왼쪽
-	// MD - 방향
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 1);
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
-//	// MC - 방향
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 1);
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 0);
-//	// MB + 방향
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 0);
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 1);
-//	// MA + 방향
-//	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0);
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 1);
-	//-----------------------------------------------
-//	// 오른쪽
-//	//MD + 방향
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 0);
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
-//	// MC + 방향
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 1);
-//	// MB - 방향
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 1);
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 0);
-//	// MA - 방향
-//	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1);
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 0);
-
-	//-----------------------------------------------
-//	// 왼쪽 위 대각선
-//	//MD - 방향
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 1);
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
-//	// MC 정지
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 0);
-//	// MB 정지
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 0);
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 0);
-//	// MA + 방향
-//	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0);
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 1);
-
-	//-----------------------------------------------
-//	// 오른쪽 아래 대각선
-//	//MD + 방향
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 0);
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
-//	// MC 정지
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 0);
-//	// MB 정지
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 0);
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 0);
-//	// MA - 방향
-//	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1);
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 0);
-
-	//-----------------------------------------------
-//	// 오른쪽 위 대각선
-//	//MD 정지
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 0);
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
-//	// MC + 방향
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 1);
-//	// MB - 방향
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 1);
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 0);
-//	// MA 정지
-//	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0);
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 0);
-
-	//-----------------------------------------------
-//	// 왼쪽 아래 대각선
-//	//MD 정지
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 0);
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
-//	// MC - 방향
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 1);
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 0);
-//	// MB + 방향
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 0);
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 1);
-//	// MA 정지
-//	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0);
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 0);
-
-	//-----------------------------------------------
-//	// 우회전
-//	//MD + 방향
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 0);
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
-//	// MC + 방향
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 1);
-//	// MB + 방향
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 0);
-//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 1);
-//	// MA + 방향
-//	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0);
-//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 1);
-
-	//-----------------------------------------------
-	// 좌회전
-	//MD - 방향
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 1);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
-	// MC  방향
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 1);
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 0);
-	// MB - 방향
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 1);
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 0);
-	// MA - 방향
-	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1);
-	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 0);
-
-//	for(int i=0; i<len; i++)
+//	uint8_t len = 0;
+//	len = process_protocol();
+//
+//	if(len != 0)
 //	{
-//		melo = flexible * (i - len/2) / (len/2);
-//		deno = 1.0 / (1+expf(-melo));
-//		fre[i] = delt * deno + fre_min;
-//		// period[i] = (uint16_t)(timer_freq/fre[i]);
+//		// response for command
+//		uint8_t cmd = g_recv_data[0];
+//		uint8_t need_res = g_recv_data[len - 1];
 //
-//		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, (int)fre[i]);
-//		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, (int)fre[i]);
-//		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, (int)fre[i]);
-//		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_4, (int)fre[i]);
-//		HAL_Delay(1);
-//	}
+//		if(cmd == 0x01)
+//		{
+//			g_mc_motor_speed = (int16_t)((g_recv_data[1] << 8) | g_recv_data[2]);
+//			g_md_motor_speed = (int16_t)((g_recv_data[3] << 8) | g_recv_data[4]);
+//			g_ma_motor_speed = (int16_t)((g_recv_data[5] << 8) | g_recv_data[6]);
+//			g_mb_motor_speed = (int16_t)((g_recv_data[7] << 8) | g_recv_data[8]);
 //
-//	HAL_Delay(1000-1);
-//
-//	for(int i=len-1; i>=0; i--)
-//	{
-//		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, (int)fre[i]);
-//		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, (int)fre[i]);
-//		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, (int)fre[i]);
-//		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_4, (int)fre[i]);
-//		HAL_Delay(1);
+//			if(need_res)
+//			{
+//				send_resonse_protocol(len);
+//			}
+//		}
 //	}
 
-//	  	HAL_Delay(1000-1);
-	__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, 200);
-	__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, 200);
-	__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, 200);
-	__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_4, 200);
+	//HAL_Delay(10);
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -414,7 +300,141 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+uint8_t process_protocol()
+{
+  if(HAL_UART_Receive(&huart1, &g_rx_buf[g_rx_index], 1, 10000) == HAL_OK)
+  {
+    g_rx_index++;
+  }
 
+  if(g_rx_index > 6)
+  {
+    if(g_rx_buf[g_rx_index - 1] == 0xFD)
+    {
+      if(g_rx_buf[g_rx_index - 2] == 0xFA)
+      {
+        uint8_t packet_len = g_rx_buf[g_rx_index - 4];
+        // Check Header
+        if((g_rx_buf[g_rx_index - packet_len - 5] == 0xFE) && (g_rx_buf[g_rx_index -packet_len - 6] == 0xFA))
+        {
+          // Check checksum
+          uint8_t calc_crc = calc_checksum(&g_rx_buf[g_rx_index - packet_len - 4], packet_len + 1);
+
+          if(calc_crc == g_rx_buf[g_rx_index - 3])
+          {
+            // Check completed.
+            for(int i = 0; i < packet_len; i++)
+            {
+              g_recv_data[i] = g_rx_buf[g_rx_index - packet_len - 4 + i];
+            }
+
+            memset(g_rx_buf, 0, 256);
+            g_rx_index = 0;
+
+            return packet_len;
+          }
+        }
+      }
+    }
+  }
+
+  return 0;
+}
+
+//void send_current_state(void)
+//{
+//  uint8_t send_data[20] = {0, };
+//
+//  send_data[0] = 0xFA;
+//  send_data[1] = 0xFE;
+//  send_data[2] = 0x92;
+//
+//  // int16_t l_state = int16_t(l_current_state * 50);  // enconder for second
+//  send_data[3] = (uint8_t)(g_l_current_encoder >> 24);
+//  send_data[4] = (uint8_t)(g_l_current_encoder >> 16);
+//  send_data[5] = (uint8_t)(g_l_current_encoder >> 8);
+//  send_data[6] = (uint8_t)(g_l_current_encoder);
+//
+//  // int16_t r_state = int16_t(r_current_state * 50);  // enconder for second
+//  send_data[7] = (uint8_t)(g_r_current_encoder >> 24);
+//  send_data[8] = (uint8_t)(g_r_current_encoder >> 16);
+//  send_data[9] = (uint8_t)(g_r_current_encoder >> 8);
+//  send_data[10] = (uint8_t)(g_r_current_encoder);
+//
+//  // int16_t r_state = int16_t(r_current_state * 50);  // enconder for second
+//  send_data[11] = (uint8_t)(g_r_current_encoder >> 24);
+//  send_data[12] = (uint8_t)(g_r_current_encoder >> 16);
+//  send_data[13] = (uint8_t)(g_r_current_encoder >> 8);
+//  send_data[14] = (uint8_t)(g_r_current_encoder);
+//
+//  // int16_t r_state = int16_t(r_current_state * 50);  // enconder for second
+//  send_data[15] = (uint8_t)(g_r_current_encoder >> 24);
+//  send_data[16] = (uint8_t)(g_r_current_encoder >> 16);
+//  send_data[17] = (uint8_t)(g_r_current_encoder >> 8);
+//  send_data[18] = (uint8_t)(g_r_current_encoder);
+//
+//  send_data[19] = 17;
+//
+//  int sum = 0;
+//  for(int i = 0; i < 17; i++)
+//  {
+//    sum += send_data[3+i];
+//  }
+//  send_data[20] = (uint8_t)sum;
+//
+//  send_data[21] = 0xFA;
+//  send_data[22] = 0xFD;
+//
+//  Serial.write(send_data, 20);
+//}
+
+
+void send_resonse_protocol(uint8_t len)
+{
+  uint8_t send_data[len+6];
+
+  //header
+  send_data[0] = 0xFA;
+  send_data[1] = 0xFE;
+
+  // cmd + data + response
+  for(int i = 0; i < len; i++)
+  {
+    send_data[2+i] = g_recv_data[i];
+  }
+
+  //LEN
+  send_data[2+len] = len;
+
+  //CMD에 0x90 더하기 : response를 보내는거니까
+  send_data[2] = send_data[2] + 0x90;
+
+  // checksum
+  uint16_t sum = 0;
+  for(int i = 0; i < 2+len; i++)
+  {
+    sum += send_data[i];
+  }
+  send_data[3+len] = (uint8_t)sum;
+
+  // footer
+  send_data[4+len] = 0xFA;
+  send_data[5+len] = 0xFD;
+
+  HAL_UART_Transmit(&huart1, send_data, len+6 ,10000);
+}
+
+
+uint8_t calc_checksum(uint8_t* data, uint8_t len)
+{
+  uint16_t sum = 0;
+  for(int i = 0; i < len; i++)
+  {
+    sum += data[i];
+  }
+
+  return (uint8_t)sum;
+}
 /* USER CODE END 4 */
 
 /**

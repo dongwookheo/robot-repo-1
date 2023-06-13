@@ -97,22 +97,203 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+//  float_t fre[500];
+//  // uint16_t period[500];
+//  float_t len = 500.0;
+//  float_t fre_max = 500.0;
+//  float_t fre_min = 0.0;
+//  float_t flexible = 4;
+//
+//  float_t deno;
+//  float_t melo;
+//  float_t delt = fre_max - fre_min;
+//
+//  float_t timer_freq = 1000000.0;
+
+
   while (1)
   {
+		//-------------------------------------------------
+		// 전진
+		// MD - 방향
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 1);
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
+	//	// MC + 방향
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 1);
+	//	// MB - 방향
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 1);
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 0);
+	//	// MA + 방향
+	//	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0);
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 1);
 
-	  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 1);
-	  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 0);
 
+		//-----------------------------------------------
+		// 후진
+	//	// MD + 방향
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 0);
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
+	//	// MC - 방향
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 1);
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 0);
+	//	// MB + 방향
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 0);
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 1);
+	//	// MA - 방향
+	//	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1);
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 0);
+		//-----------------------------------------------
+		// 왼쪽
+		// MD - 방향
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 1);
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
+	//	// MC - 방향
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 1);
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 0);
+	//	// MB + 방향
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 0);
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 1);
+	//	// MA + 방향
+	//	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0);
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 1);
+		//-----------------------------------------------
+	//	// 오른쪽
+	//	//MD + 방향
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 0);
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
+	//	// MC + 방향
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 1);
+	//	// MB - 방향
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 1);
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 0);
+	//	// MA - 방향
+	//	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1);
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 0);
 
-  	  HAL_Delay(2000);
+		//-----------------------------------------------
+	//	// 왼쪽 위 대각선
+	//	//MD - 방향
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 1);
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
+	//	// MC 정지
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 0);
+	//	// MB 정지
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 0);
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 0);
+	//	// MA + 방향
+	//	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0);
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 1);
 
-  	  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
-  	  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 1);
+		//-----------------------------------------------
+	//	// 오른쪽 아래 대각선
+	//	//MD + 방향
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 0);
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
+	//	// MC 정지
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 0);
+	//	// MB 정지
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 0);
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 0);
+	//	// MA - 방향
+	//	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1);
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 0);
 
-	  HAL_Delay(2000);
+		//-----------------------------------------------
+	//	// 오른쪽 위 대각선
+	//	//MD 정지
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 0);
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
+	//	// MC + 방향
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 1);
+	//	// MB - 방향
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 1);
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 0);
+	//	// MA 정지
+	//	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0);
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 0);
 
-	  __HAL_TIM_SET_COMPARE(&htim8,TIM_CHANNEL_2, 100);
+		//-----------------------------------------------
+	//	// 왼쪽 아래 대각선
+	//	//MD 정지
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 0);
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
+	//	// MC - 방향
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 1);
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 0);
+	//	// MB + 방향
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 0);
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 1);
+	//	// MA 정지
+	//	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0);
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 0);
 
+		//-----------------------------------------------
+	//	// 우회전
+	//	//MD + 방향
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 0);
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
+	//	// MC + 방향
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 1);
+	//	// MB + 방향
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 0);
+	//	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 1);
+	//	// MA + 방향
+	//	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0);
+	//	HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 1);
+
+		//-----------------------------------------------
+		// 좌회전
+		//MD - 방향
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 1);
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
+		// MC  방향
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 1);
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 0);
+		// MB - 방향
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 1);
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 0);
+		// MA - 방향
+		HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 1);
+		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_12, 0);
+
+		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, 200);
+		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, 200);
+		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, 200);
+		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_4, 200);
+
+		//	for(int i=0; i<len; i++)
+		//	{
+		//		melo = flexible * (i - len/2) / (len/2);
+		//		deno = 1.0 / (1+expf(-melo));
+		//		fre[i] = delt * deno + fre_min;
+		//		// period[i] = (uint16_t)(timer_freq/fre[i]);
+		//
+		//		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, (int)fre[i]);
+		//		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, (int)fre[i]);
+		//		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, (int)fre[i]);
+		//		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_4, (int)fre[i]);
+		//		HAL_Delay(1);
+		//	}
+		//
+		//	HAL_Delay(1000-1);
+		//
+		//	for(int i=len-1; i>=0; i--)
+		//	{
+		//		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, (int)fre[i]);
+		//		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, (int)fre[i]);
+		//		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, (int)fre[i]);
+		//		__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_4, (int)fre[i]);
+		//		HAL_Delay(1);
+		//	}
+
+		//	  	HAL_Delay(1000-1);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

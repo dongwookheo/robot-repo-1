@@ -165,3 +165,4 @@ stm32/stm32_syh/.metadata/
 stm32/stm32_syh/encoder_test/.metadata/
 stm32/stm32_syh/motor_test/.metadata/
 stm32/stm32_syh/motor_control/.metadata/
+stm32/stm32_syh/uart_test/.metadata/
