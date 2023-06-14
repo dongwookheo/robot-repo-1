@@ -55,7 +55,6 @@ encoder_instance enc_instanceC;
 uint8_t g_rx_buf[256] = {0, };
 uint8_t g_recv_data[256] = {0, };
 uint8_t g_rx_index = 0;
-uint8_t data_len = 0;
 
 int16_t g_ma_motor_speed = 0;
 int16_t g_mb_motor_speed = 0;
@@ -90,14 +89,41 @@ uint16_t directionB = 0;
 uint16_t directionC = 0;
 uint16_t directionD = 0;
 
+
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if (huart == &huart1)
 	{
+		uint8_t len = 0;
+		len = process_protocol();
+
+		if(len != 0)
+		{
+			// response for command
+			uint8_t cmd = g_recv_data[0];
+			uint8_t need_res = g_recv_data[len - 1];
+
+			if(cmd == 0x01)
+			{
+				g_mc_motor_speed = (int16_t)((g_recv_data[1] << 8) | g_recv_data[2]);
+				g_md_motor_speed = (int16_t)((g_recv_data[3] << 8) | g_recv_data[4]);
+				g_ma_motor_speed = (int16_t)((g_recv_data[5] << 8) | g_recv_data[6]);
+				g_mb_motor_speed = (int16_t)((g_recv_data[7] << 8) | g_recv_data[8]);
+
+				if(need_res)
+				{
+					send_resonse_protocol(len);
+				}
+			}
+			else if(cmd == 0x02)
+			{
+
+			}
+		}
 		HAL_UART_Receive_IT(&huart1, &g_rx_buf[g_rx_index], 1);
-		g_rx_index++;
 	}
 }
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 
@@ -119,36 +145,36 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 		{
 			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 0);
 			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 1);
-			__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, g_ma_motor_speed);
+			__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, g_mb_motor_speed);
 		}
 		else {
 			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_4, 1);
 			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, 0);
-			__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, -1 * g_ma_motor_speed);
+			__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, -1 * g_mb_motor_speed);
 		}
 
 		if(g_mc_motor_speed >= 0)
 		{
 			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 0);
 			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 1);
-			__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, g_ma_motor_speed);
+			__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, g_mc_motor_speed);
 		}
 		else {
 			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 1);
 			HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 0);
-			__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, -1 * g_ma_motor_speed);
+			__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, -1 * g_mc_motor_speed);
 		}
 
 		if(g_md_motor_speed >= 0)
 		{
 			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 0);
 			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
-			__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, g_ma_motor_speed);
+			__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, g_md_motor_speed);
 		}
 		else {
 			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 1);
 			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
-			__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, -1 * g_ma_motor_speed);
+			__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, -1 * g_md_motor_speed);
 		}
 
 //		counterA = __HAL_TIM_GET_COUNTER(&htim2);
@@ -207,6 +233,7 @@ int main(void)
   MX_TIM6_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+
   HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_ALL);
   HAL_TIM_Encoder_Start_IT(&htim3, TIM_CHANNEL_ALL);
   HAL_TIM_Encoder_Start_IT(&htim4, TIM_CHANNEL_ALL);
@@ -219,7 +246,6 @@ int main(void)
 
   HAL_TIM_Base_Start_IT(&htim6);
 
-  __HAL_UART_ENABLE_IT(&huart1,UART_IT_RXNE);
   HAL_UART_Receive_IT(&huart1, &g_rx_buf[g_rx_index], 1);
   /* USER CODE END 2 */
 
@@ -228,30 +254,6 @@ int main(void)
 
   while (1)
   {
-//	uint8_t len = 0;
-//	len = process_protocol();
-//
-//	if(len != 0)
-//	{
-//		// response for command
-//		uint8_t cmd = g_recv_data[0];
-//		uint8_t need_res = g_recv_data[len - 1];
-//
-//		if(cmd == 0x01)
-//		{
-//			g_mc_motor_speed = (int16_t)((g_recv_data[1] << 8) | g_recv_data[2]);
-//			g_md_motor_speed = (int16_t)((g_recv_data[3] << 8) | g_recv_data[4]);
-//			g_ma_motor_speed = (int16_t)((g_recv_data[5] << 8) | g_recv_data[6]);
-//			g_mb_motor_speed = (int16_t)((g_recv_data[7] << 8) | g_recv_data[8]);
-//
-//			if(need_res)
-//			{
-//				send_resonse_protocol(len);
-//			}
-//		}
-//	}
-
-	//HAL_Delay(10);
 
     /* USER CODE END WHILE */
 
@@ -302,45 +304,41 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 uint8_t process_protocol()
 {
-  if(HAL_UART_Receive(&huart1, &g_rx_buf[g_rx_index], 1, 10000) == HAL_OK)
-  {
-    g_rx_index++;
-  }
+	g_rx_index++;
 
-  if(g_rx_index > 6)
-  {
-    if(g_rx_buf[g_rx_index - 1] == 0xFD)
-    {
-      if(g_rx_buf[g_rx_index - 2] == 0xFA)
-      {
-        uint8_t packet_len = g_rx_buf[g_rx_index - 4];
-        // Check Header
-        if((g_rx_buf[g_rx_index - packet_len - 5] == 0xFE) && (g_rx_buf[g_rx_index -packet_len - 6] == 0xFA))
-        {
-          // Check checksum
-          uint8_t calc_crc = calc_checksum(&g_rx_buf[g_rx_index - packet_len - 4], packet_len + 1);
+	if(g_rx_index > 6)
+	{
+		if(g_rx_buf[g_rx_index - 1] == 0xFD)
+		{
+		  if(g_rx_buf[g_rx_index - 2] == 0xFA)
+		  {
+			uint8_t packet_len = g_rx_buf[g_rx_index - 4];
+			// Check Header
+			if((g_rx_buf[g_rx_index - packet_len - 5] == 0xFE) && (g_rx_buf[g_rx_index -packet_len - 6] == 0xFA))
+			{
+			  // Check checksum
+			  uint8_t calc_crc = calc_checksum(&g_rx_buf[g_rx_index - packet_len - 4], packet_len + 1);
 
-          if(calc_crc == g_rx_buf[g_rx_index - 3])
-          {
-            // Check completed.
-            for(int i = 0; i < packet_len; i++)
-            {
-              g_recv_data[i] = g_rx_buf[g_rx_index - packet_len - 4 + i];
-            }
+			  if(calc_crc == g_rx_buf[g_rx_index - 3])
+			  {
+				// Check completed.
+				for(int i = 0; i < packet_len; i++)
+				{
+				  g_recv_data[i] = g_rx_buf[g_rx_index - packet_len - 4 + i];
+				}
 
-            memset(g_rx_buf, 0, 256);
-            g_rx_index = 0;
+				memset(g_rx_buf, 0, 256);
+				g_rx_index = 0;
 
-            return packet_len;
-          }
-        }
-      }
-    }
-  }
+				return packet_len;
+			  }
+			}
+		  }
+		}
+	}
 
   return 0;
 }
-
 //void send_current_state(void)
 //{
 //  uint8_t send_data[20] = {0, };
@@ -391,49 +389,49 @@ uint8_t process_protocol()
 
 void send_resonse_protocol(uint8_t len)
 {
-  uint8_t send_data[len+6];
+	uint8_t send_data[len+6];
 
-  //header
-  send_data[0] = 0xFA;
-  send_data[1] = 0xFE;
+	//header
+	send_data[0] = 0xFA;
+	send_data[1] = 0xFE;
 
-  // cmd + data + response
-  for(int i = 0; i < len; i++)
-  {
-    send_data[2+i] = g_recv_data[i];
-  }
+	// cmd + data + response
+	for(int i = 0; i < len; i++)
+	{
+		send_data[2+i] = g_recv_data[i];
+	}
 
-  //LEN
-  send_data[2+len] = len;
+	//LEN
+	send_data[2+len] = len;
 
-  //CMD에 0x90 더하기 : response를 보내는거니까
-  send_data[2] = send_data[2] + 0x90;
+	//CMD에 0x90 더하기 : response를 보내는거니까
+	send_data[2] = send_data[2] + 0x90;
 
-  // checksum
-  uint16_t sum = 0;
-  for(int i = 0; i < 2+len; i++)
-  {
-    sum += send_data[i];
-  }
-  send_data[3+len] = (uint8_t)sum;
+	// checksum
+	uint16_t sum = 0;
+	for(int i = 0; i < 2+len; i++)
+	{
+		sum += send_data[i];
+	}
+	send_data[3+len] = (uint8_t)sum;
 
-  // footer
-  send_data[4+len] = 0xFA;
-  send_data[5+len] = 0xFD;
+	// footer
+	send_data[4+len] = 0xFA;
+	send_data[5+len] = 0xFD;
 
-  HAL_UART_Transmit(&huart1, send_data, len+6 ,10000);
+	HAL_UART_Transmit(&huart1, send_data, len+6 ,10000);
 }
 
 
 uint8_t calc_checksum(uint8_t* data, uint8_t len)
 {
-  uint16_t sum = 0;
-  for(int i = 0; i < len; i++)
-  {
-    sum += data[i];
-  }
+	uint16_t sum = 0;
+	for(int i = 0; i < len; i++)
+	{
+		sum += data[i];
+	}
 
-  return (uint8_t)sum;
+	return (uint8_t)sum;
 }
 /* USER CODE END 4 */
 

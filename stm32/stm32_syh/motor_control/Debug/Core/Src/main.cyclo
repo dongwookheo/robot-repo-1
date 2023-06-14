@@ -1,8 +1,7 @@
-main.c:93:6:HAL_UART_RxCpltCallback	2
-main.c:101:6:HAL_TIM_PeriodElapsedCallback	6
-main.c:178:5:main	1
-main.c:267:6:SystemClock_Config	3
-main.c:303:9:process_protocol	9
-main.c:392:6:send_resonse_protocol	3
-main.c:428:9:calc_checksum	2
-main.c:444:6:Error_Handler	1
+main.c:102:6:HAL_UART_RxCpltCallback	4
+main.c:132:6:HAL_TIM_PeriodElapsedCallback	6
+main.c:209:5:main	1
+main.c:274:6:SystemClock_Config	3
+main.c:310:9:process_protocol	8
+main.c:431:9:calc_checksum	2
+main.c:447:6:Error_Handler	1

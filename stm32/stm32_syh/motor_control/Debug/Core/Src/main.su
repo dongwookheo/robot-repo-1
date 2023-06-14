@@ -1,8 +1,7 @@
-../Core/Src/main.c:93:6:HAL_UART_RxCpltCallback	16	static
-../Core/Src/main.c:101:6:HAL_TIM_PeriodElapsedCallback	16	static
-../Core/Src/main.c:178:5:main	8	static
-../Core/Src/main.c:267:6:SystemClock_Config	72	static
-../Core/Src/main.c:303:9:process_protocol	16	static
-../Core/Src/main.c:392:6:send_resonse_protocol	64	dynamic
-../Core/Src/main.c:428:9:calc_checksum	24	static
-../Core/Src/main.c:444:6:Error_Handler	4	static,ignoring_inline_asm
+../Core/Src/main.c:102:6:HAL_UART_RxCpltCallback	24	static
+../Core/Src/main.c:132:6:HAL_TIM_PeriodElapsedCallback	16	static
+../Core/Src/main.c:209:5:main	8	static
+../Core/Src/main.c:274:6:SystemClock_Config	72	static
+../Core/Src/main.c:310:9:process_protocol	16	static
+../Core/Src/main.c:431:9:calc_checksum	24	static
+../Core/Src/main.c:447:6:Error_Handler	4	static,ignoring_inline_asm
