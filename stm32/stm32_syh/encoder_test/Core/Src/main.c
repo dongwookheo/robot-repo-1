@@ -49,8 +49,15 @@ TIM_HandleTypeDef htim4;
 TIM_HandleTypeDef htim5;
 TIM_HandleTypeDef htim6;
 
+UART_HandleTypeDef huart1;
+
 /* USER CODE BEGIN PV */
-encoder_instance enc_instance;
+
+encoder_instance enc_instance_A;
+encoder_instance enc_instance_B;
+encoder_instance enc_instance_C;
+encoder_instance enc_instance_D;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -61,6 +68,7 @@ static void MX_TIM3_Init(void);
 static void MX_TIM4_Init(void);
 static void MX_TIM5_Init(void);
 static void MX_TIM6_Init(void);
+static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -82,18 +90,33 @@ int16_t countB = 0;
 int16_t countC = 0;
 int16_t countD = 0;
 
-int16_t encoder_velocity;
-int32_t encoder_position;
+int16_t encoder_velocity_A = 0;
+int32_t encoder_position_A = 0;
+int16_t encoder_velocity_B = 0;
+int32_t encoder_position_B = 0;
+int16_t encoder_velocity_C = 0;
+int32_t encoder_position_C = 0;
+int16_t encoder_velocity_D = 0;
+int32_t encoder_position_D = 0;
 
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-	if (htim->Instance == TIM6){
-		counterC = __HAL_TIM_GET_COUNTER(&htim4);
-		countC = (short)counterC;
-		update_encoder(&enc_instance, &htim4);
-		encoder_position = enc_instance.position;
-		encoder_velocity = enc_instance.velocity;
+	if (htim->Instance == TIM6)
+	{
+		update_encoder(&enc_instance_A, &htim2);
+		update_encoder(&enc_instance_B, &htim3);
+		update_encoder(&enc_instance_C, &htim4);
+		update_encoder(&enc_instance_D, &htim5);
+		encoder_position_A = enc_instance_A.position;
+		encoder_velocity_A = enc_instance_A.velocity;
+		encoder_position_B = enc_instance_B.position;
+		encoder_velocity_B = enc_instance_B.velocity;
+		encoder_position_C = enc_instance_C.position;
+		encoder_velocity_C = enc_instance_C.velocity;
+		encoder_position_D = enc_instance_D.position;
+		encoder_velocity_D = enc_instance_D.velocity;
+
 	}
 }
 
@@ -159,8 +182,8 @@ int main(void)
   MX_TIM4_Init();
   MX_TIM5_Init();
   MX_TIM6_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  //uint8_t str[] = "Hello, World!\n\r";
   HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_ALL);
   HAL_TIM_Encoder_Start_IT(&htim3, TIM_CHANNEL_ALL);
   HAL_TIM_Encoder_Start_IT(&htim4, TIM_CHANNEL_ALL);
@@ -175,8 +198,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  //HAL_UART_Transmit(&huart1, str, sizeof(str),100);
-	  //HAL_Delay(1000-1);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -454,6 +475,39 @@ static void MX_TIM6_Init(void)
   /* USER CODE BEGIN TIM6_Init 2 */
 
   /* USER CODE END TIM6_Init 2 */
+
+}
+
+/**
+  * @brief USART1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART1_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART1_Init 0 */
+
+  /* USER CODE END USART1_Init 0 */
+
+  /* USER CODE BEGIN USART1_Init 1 */
+
+  /* USER CODE END USART1_Init 1 */
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 115200;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART1_Init 2 */
+
+  /* USER CODE END USART1_Init 2 */
 
 }
 
