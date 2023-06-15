@@ -50,7 +50,19 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-encoder_instance enc_instanceC;
+encoder_instance enc_instance_A;
+encoder_instance enc_instance_B;
+encoder_instance enc_instance_C;
+encoder_instance enc_instance_D;
+
+int16_t encoder_velocity_A = 0;
+int32_t encoder_position_A = 0;
+int16_t encoder_velocity_B = 0;
+int32_t encoder_position_B = 0;
+int16_t encoder_velocity_C = 0;
+int32_t encoder_position_C = 0;
+int16_t encoder_velocity_D = 0;
+int32_t encoder_position_D = 0;
 
 uint8_t g_rx_buf[256] = {0, };
 uint8_t g_recv_data[256] = {0, };
@@ -76,19 +88,6 @@ uint8_t calc_checksum(uint8_t*, uint8_t);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
-int16_t encoder_velocityC;
-int32_t encoder_positionC;
-
-uint16_t counterA = 0;
-uint16_t counterB = 0;
-uint16_t counterC = 0;
-uint16_t counterD = 0;
-uint16_t directionA = 0;
-uint16_t directionB = 0;
-uint16_t directionC = 0;
-uint16_t directionD = 0;
-
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
@@ -117,7 +116,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			}
 			else if(cmd == 0x02)
 			{
-
+				send_current_state();
 			}
 		}
 		HAL_UART_Receive_IT(&huart1, &g_rx_buf[g_rx_index], 1);
@@ -177,19 +176,18 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, -1 * g_md_motor_speed);
 		}
 
-//		counterA = __HAL_TIM_GET_COUNTER(&htim2);
-//		counterB = __HAL_TIM_GET_COUNTER(&htim3);
-//		counterC = __HAL_TIM_GET_COUNTER(&htim4);
-//		counterD = __HAL_TIM_GET_COUNTER(&htim5);
-//
-//		directionA = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim2);
-//		directionB = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim3);
-//		directionC = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim4);
-//		directionD = __HAL_TIM_IS_TIM_COUNTING_DOWN(&htim5);
-//
-//		update_encoder(&enc_instanceC, &htim4);
-//		encoder_positionC = enc_instanceC.position;
-//		encoder_velocityC = enc_instanceC.velocity;
+		update_encoder(&enc_instance_A, &htim2);
+		update_encoder(&enc_instance_B, &htim3);
+		update_encoder(&enc_instance_C, &htim4);
+		update_encoder(&enc_instance_D, &htim5);
+		encoder_position_A = enc_instance_A.position;
+		encoder_velocity_A = enc_instance_A.velocity;
+		encoder_position_B = enc_instance_B.position;
+		encoder_velocity_B = enc_instance_B.velocity;
+		encoder_position_C = enc_instance_C.position;
+		encoder_velocity_C = enc_instance_C.velocity;
+		encoder_position_D = enc_instance_D.position;
+		encoder_velocity_D = enc_instance_D.velocity;
 	}
 }
 
@@ -339,52 +337,52 @@ uint8_t process_protocol()
 
   return 0;
 }
-//void send_current_state(void)
-//{
-//  uint8_t send_data[20] = {0, };
-//
-//  send_data[0] = 0xFA;
-//  send_data[1] = 0xFE;
-//  send_data[2] = 0x92;
-//
-//  // int16_t l_state = int16_t(l_current_state * 50);  // enconder for second
-//  send_data[3] = (uint8_t)(g_l_current_encoder >> 24);
-//  send_data[4] = (uint8_t)(g_l_current_encoder >> 16);
-//  send_data[5] = (uint8_t)(g_l_current_encoder >> 8);
-//  send_data[6] = (uint8_t)(g_l_current_encoder);
-//
-//  // int16_t r_state = int16_t(r_current_state * 50);  // enconder for second
-//  send_data[7] = (uint8_t)(g_r_current_encoder >> 24);
-//  send_data[8] = (uint8_t)(g_r_current_encoder >> 16);
-//  send_data[9] = (uint8_t)(g_r_current_encoder >> 8);
-//  send_data[10] = (uint8_t)(g_r_current_encoder);
-//
-//  // int16_t r_state = int16_t(r_current_state * 50);  // enconder for second
-//  send_data[11] = (uint8_t)(g_r_current_encoder >> 24);
-//  send_data[12] = (uint8_t)(g_r_current_encoder >> 16);
-//  send_data[13] = (uint8_t)(g_r_current_encoder >> 8);
-//  send_data[14] = (uint8_t)(g_r_current_encoder);
-//
-//  // int16_t r_state = int16_t(r_current_state * 50);  // enconder for second
-//  send_data[15] = (uint8_t)(g_r_current_encoder >> 24);
-//  send_data[16] = (uint8_t)(g_r_current_encoder >> 16);
-//  send_data[17] = (uint8_t)(g_r_current_encoder >> 8);
-//  send_data[18] = (uint8_t)(g_r_current_encoder);
-//
-//  send_data[19] = 17;
-//
-//  int sum = 0;
-//  for(int i = 0; i < 17; i++)
-//  {
-//    sum += send_data[3+i];
-//  }
-//  send_data[20] = (uint8_t)sum;
-//
-//  send_data[21] = 0xFA;
-//  send_data[22] = 0xFD;
-//
-//  Serial.write(send_data, 20);
-//}
+void send_current_state(void)
+{
+  uint8_t send_data[20] = {0, };
+
+  send_data[0] = 0xFA;
+  send_data[1] = 0xFE;
+  send_data[2] = 0x92;
+
+  // int16_t l_state = int16_t(l_current_state * 50);  // enconder for second
+  send_data[3] = (uint8_t)(encoder_position_C >> 24);
+  send_data[4] = (uint8_t)(encoder_position_C >> 16);
+  send_data[5] = (uint8_t)(encoder_position_C >> 8);
+  send_data[6] = (uint8_t)(encoder_position_C);
+
+  // int16_t r_state = int16_t(r_current_state * 50);  // enconder for second
+  send_data[7] = (uint8_t)(encoder_position_D >> 24);
+  send_data[8] = (uint8_t)(encoder_position_D >> 16);
+  send_data[9] = (uint8_t)(encoder_position_D >> 8);
+  send_data[10] = (uint8_t)(encoder_position_D);
+
+  // int16_t r_state = int16_t(r_current_state * 50);  // enconder for second
+  send_data[11] = (uint8_t)(encoder_position_A >> 24);
+  send_data[12] = (uint8_t)(encoder_position_A >> 16);
+  send_data[13] = (uint8_t)(encoder_position_A >> 8);
+  send_data[14] = (uint8_t)(encoder_position_A);
+
+  // int16_t r_state = int16_t(r_current_state * 50);  // enconder for second
+  send_data[15] = (uint8_t)(encoder_position_B >> 24);
+  send_data[16] = (uint8_t)(encoder_position_B >> 16);
+  send_data[17] = (uint8_t)(encoder_position_B >> 8);
+  send_data[18] = (uint8_t)(encoder_position_B);
+
+  send_data[19] = 17;
+
+  int sum = 0;
+  for(int i = 0; i < 17; i++)
+  {
+    sum += send_data[3+i];
+  }
+  send_data[20] = (uint8_t)sum;
+
+  send_data[21] = 0xFA;
+  send_data[22] = 0xFD;
+
+  HAL_UART_Transmit(&huart1, send_data, 23 ,10000);
+}
 
 
 void send_resonse_protocol(uint8_t len)
