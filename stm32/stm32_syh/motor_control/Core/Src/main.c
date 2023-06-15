@@ -83,12 +83,14 @@ uint8_t process_protocol(void);
 void send_current_state(void);
 void send_resonse_protocol(uint8_t);
 uint8_t calc_checksum(uint8_t*, uint8_t);
+int16_t limit_motor_speed(int16_t);
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+// uart로 1byte 들어올때마다 실행되는 인터럽트 콜백함수
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if (huart == &huart1)
@@ -118,16 +120,25 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			{
 				send_current_state();
 			}
+			g_rx_index = 0;
 		}
 		HAL_UART_Receive_IT(&huart1, &g_rx_buf[g_rx_index], 1);
 	}
 }
 
+// timer6 주기마다 실행되는 타이머 인터럽트 콜백 함수
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
 
 	if (htim->Instance == TIM6){
 
+		// pwm 수치 제한 (-1000< pwm < 1000)
+		g_ma_motor_speed = limit_motor_speed(g_ma_motor_speed);
+		g_mb_motor_speed = limit_motor_speed(g_mb_motor_speed);
+		g_mc_motor_speed = limit_motor_speed(g_mc_motor_speed);
+		g_md_motor_speed = limit_motor_speed(g_md_motor_speed);
+
+		// 모터에 pwm 수치를 넣어준다
 		if(g_ma_motor_speed >= 0)
 		{
 			HAL_GPIO_WritePin(GPIOD, GPIO_PIN_2, 0);
@@ -176,6 +187,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 			__HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, -1 * g_md_motor_speed);
 		}
 
+		// encoder값을 읽어 변수에 저장
 		update_encoder(&enc_instance_A, &htim2);
 		update_encoder(&enc_instance_B, &htim3);
 		update_encoder(&enc_instance_C, &htim4);
@@ -191,8 +203,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	}
 }
 
-//void HAL_TIM_IC_CaptureCallback
-//void HAL_TIM_PeriodElapsedCallback
 /* USER CODE END 0 */
 
 /**
@@ -232,18 +242,22 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_ALL);
-  HAL_TIM_Encoder_Start_IT(&htim3, TIM_CHANNEL_ALL);
-  HAL_TIM_Encoder_Start_IT(&htim4, TIM_CHANNEL_ALL);
-  HAL_TIM_Encoder_Start_IT(&htim5, TIM_CHANNEL_ALL);
+  // encoder mode 시작
+  HAL_TIM_Encoder_Start(&htim2, TIM_CHANNEL_ALL);
+  HAL_TIM_Encoder_Start(&htim3, TIM_CHANNEL_ALL);
+  HAL_TIM_Encoder_Start(&htim4, TIM_CHANNEL_ALL);
+  HAL_TIM_Encoder_Start(&htim5, TIM_CHANNEL_ALL);
 
+  // pwm timer 시작
   HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_1);  // start the pwm md
   HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_2);  // start the pwm mc
   HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_3);  // start the pwm mb
   HAL_TIM_PWM_Start(&htim8, TIM_CHANNEL_4);  // start the pwm ma
 
+  // timer6 인터럽트 시작
   HAL_TIM_Base_Start_IT(&htim6);
 
+  // UART 인터럽트 수신 시작
   HAL_UART_Receive_IT(&huart1, &g_rx_buf[g_rx_index], 1);
   /* USER CODE END 2 */
 
@@ -430,6 +444,20 @@ uint8_t calc_checksum(uint8_t* data, uint8_t len)
 	}
 
 	return (uint8_t)sum;
+}
+
+int16_t limit_motor_speed(int16_t motor)
+{
+	if(motor > 1000)
+	{
+		motor = 1000;
+	}
+	else if(motor < -1000)
+	{
+		motor = -1000;
+	}
+
+	return (int16_t)(motor);
 }
 /* USER CODE END 4 */
 
