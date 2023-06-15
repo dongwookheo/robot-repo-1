@@ -75,20 +75,20 @@ static void MX_USART1_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint16_t counterA = 0;
-uint16_t counterB = 0;
-uint16_t counterC = 0;
-uint16_t counterD = 0;
-
-uint16_t directionA = 0;
-uint16_t directionB = 0;
-uint16_t directionC = 0;
-uint16_t directionD = 0;
-
-int16_t countA = 0;
-int16_t countB = 0;
-int16_t countC = 0;
-int16_t countD = 0;
+//uint16_t counterA = 0;
+//uint16_t counterB = 0;
+//uint16_t counterC = 0;
+//uint16_t counterD = 0;
+//
+//uint16_t directionA = 0;
+//uint16_t directionB = 0;
+//uint16_t directionC = 0;
+//uint16_t directionD = 0;
+//
+//int16_t countA = 0;
+//int16_t countB = 0;
+//int16_t countC = 0;
+//int16_t countD = 0;
 
 int16_t encoder_velocity_A = 0;
 int32_t encoder_position_A = 0;
@@ -184,6 +184,11 @@ int main(void)
   MX_TIM6_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+  reset_encoder(&enc_instance_A);
+  reset_encoder(&enc_instance_B);
+  reset_encoder(&enc_instance_C);
+  reset_encoder(&enc_instance_D);
+
   HAL_TIM_Encoder_Start_IT(&htim2, TIM_CHANNEL_ALL);
   HAL_TIM_Encoder_Start_IT(&htim3, TIM_CHANNEL_ALL);
   HAL_TIM_Encoder_Start_IT(&htim4, TIM_CHANNEL_ALL);
