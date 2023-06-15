@@ -104,7 +104,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			uint8_t cmd = g_recv_data[0];
 			uint8_t need_res = g_recv_data[len - 1];
 
-			if(cmd == 0x01)
+			if(cmd == 0x02)
 			{
 				g_mc_motor_speed = (int16_t)((g_recv_data[1] << 8) | g_recv_data[2]);
 				g_md_motor_speed = (int16_t)((g_recv_data[3] << 8) | g_recv_data[4]);
@@ -116,7 +116,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 					send_resonse_protocol(len);
 				}
 			}
-			else if(cmd == 0x02)
+			else if(cmd == 0x03)
 			{
 				send_current_state();
 			}

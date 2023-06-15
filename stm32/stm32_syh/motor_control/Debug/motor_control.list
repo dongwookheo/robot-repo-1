@@ -272,9 +272,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
  8000356:	5cd3      	ldrb	r3, [r2, r3]
  8000358:	737b      	strb	r3, [r7, #13]
 
-			if(cmd == 0x01)
+			if(cmd == 0x02)
  800035a:	7bbb      	ldrb	r3, [r7, #14]
- 800035c:	2b01      	cmp	r3, #1
+ 800035c:	2b02      	cmp	r3, #2
  800035e:	d133      	bne.n	80003c8 <HAL_UART_RxCpltCallback+0xa0>
 			{
 				g_mc_motor_speed = (int16_t)((g_recv_data[1] << 8) | g_recv_data[2]);
@@ -338,9 +338,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
  80003c6:	e004      	b.n	80003d2 <HAL_UART_RxCpltCallback+0xaa>
 				}
 			}
-			else if(cmd == 0x02)
+			else if(cmd == 0x03)
  80003c8:	7bbb      	ldrb	r3, [r7, #14]
- 80003ca:	2b02      	cmp	r3, #2
+ 80003ca:	2b03      	cmp	r3, #3
  80003cc:	d101      	bne.n	80003d2 <HAL_UART_RxCpltCallback+0xaa>
 			{
 				send_current_state();
