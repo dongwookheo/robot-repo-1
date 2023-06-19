@@ -251,8 +251,8 @@ int main(void)
 		//-----------------------------------------------
 		// 좌회전
 		//MD - 방향
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 1);
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 0);
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
 		// MC  방향
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, 1);
 		HAL_GPIO_WritePin(GPIOC, GPIO_PIN_4, 0);

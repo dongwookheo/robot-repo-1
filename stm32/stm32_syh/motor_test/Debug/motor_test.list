@@ -130,13 +130,13 @@ int main(void)
 		//-----------------------------------------------
 		// 좌회전
 		//MD - 방향
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 1);
- 8000258:	2201      	movs	r2, #1
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 0);
+ 8000258:	2200      	movs	r2, #0
  800025a:	2101      	movs	r1, #1
  800025c:	481c      	ldr	r0, [pc, #112]	; (80002d0 <main+0xac>)
  800025e:	f000 fd83 	bl	8000d68 <HAL_GPIO_WritePin>
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 0);
- 8000262:	2200      	movs	r2, #0
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_1, 1);
+ 8000262:	2201      	movs	r2, #1
  8000264:	2102      	movs	r1, #2
  8000266:	481a      	ldr	r0, [pc, #104]	; (80002d0 <main+0xac>)
  8000268:	f000 fd7e 	bl	8000d68 <HAL_GPIO_WritePin>
@@ -194,7 +194,7 @@ int main(void)
  80002c4:	681b      	ldr	r3, [r3, #0]
  80002c6:	22c8      	movs	r2, #200	; 0xc8
  80002c8:	641a      	str	r2, [r3, #64]	; 0x40
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 1);
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, 0);
  80002ca:	e7c5      	b.n	8000258 <main+0x34>
  80002cc:	20000028 	.word	0x20000028
  80002d0:	40010c00 	.word	0x40010c00
