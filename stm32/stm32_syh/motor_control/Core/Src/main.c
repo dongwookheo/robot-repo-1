@@ -93,7 +93,7 @@ int16_t limit_motor_speed(int16_t);
 // uart로 1byte 들어올때마다 실행되는 인터럽트 콜백함수
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	if (huart == &huart1)
+	if (huart == &huart2)
 	{
 		uint8_t len = 0;
 		len = process_protocol();
@@ -129,7 +129,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			}
 			g_rx_index = 0;
 		}
-		HAL_UART_Receive_IT(&huart1, &g_rx_buf[g_rx_index], 1);
+		HAL_UART_Receive_IT(&huart2, &g_rx_buf[g_rx_index], 1);
 	}
 }
 
@@ -246,7 +246,7 @@ int main(void)
   MX_TIM5_Init();
   MX_TIM8_Init();
   MX_TIM6_Init();
-  MX_USART1_UART_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
   // encoder mode 시작
@@ -265,7 +265,7 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim6);
 
   // UART 인터럽트 수신 시작
-  HAL_UART_Receive_IT(&huart1, &g_rx_buf[g_rx_index], 1);
+  HAL_UART_Receive_IT(&huart2, &g_rx_buf[g_rx_index], 1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -402,7 +402,7 @@ void send_current_state(void)
   send_data[21] = 0xFA;
   send_data[22] = 0xFD;
 
-  HAL_UART_Transmit(&huart1, send_data, 23 ,1000);
+  HAL_UART_Transmit(&huart2, send_data, 23 ,1000);
 }
 
 
@@ -438,7 +438,7 @@ void send_resonse_protocol(uint8_t len)
 	send_data[4+len] = 0xFA;
 	send_data[5+len] = 0xFD;
 
-	HAL_UART_Transmit(&huart1, send_data, len+6 ,10000);
+	HAL_UART_Transmit(&huart2, send_data, len+6 ,10000);
 }
 
 
@@ -455,13 +455,13 @@ uint8_t calc_checksum(uint8_t* data, uint8_t len)
 
 int16_t limit_motor_speed(int16_t motor)
 {
-	if(motor > 1000)
+	if(motor > 500)
 	{
-		motor = 1000;
+		motor = 500;
 	}
-	else if(motor < -1000)
+	else if(motor < -500)
 	{
-		motor = -1000;
+		motor = -500;
 	}
 
 	return (int16_t)(motor);
