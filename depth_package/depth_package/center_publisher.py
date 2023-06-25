@@ -9,6 +9,7 @@ import datetime
 import cv2
 from ultralytics import YOLO
 from cv_bridge import CvBridge, CvBridgeError
+from std_msgs.msg import UInt16
 
 class CenterPublisher(Node):
 
@@ -20,15 +21,22 @@ class CenterPublisher(Node):
         self.center_pub = self.create_publisher(CoordinateList,
                                                 "/center_coord_list",
                                                  10)
+        self.depth_sub = self.create_subscription(
+            UInt16,
+            '/depth',
+            self.listener_callback,
+            10)
+        
         self.count = 1
         self.center_coord = CenterCoordinate()
         self.center_coord_list = CoordinateList()
+        self.depth = 0
 
         # Load the YOLOv8 model
         self.model = YOLO('/home/hdw/Downloads/bestx_v3.pt')
         
     def color_image_callback(self, msg):
-        start_time = datetime.datetime.now()
+        # start_time = datetime.datetime.now()
         try:
             cv_image = self.bridge.imgmsg_to_cv2(msg, "bgr8")
 
@@ -54,10 +62,10 @@ class CenterPublisher(Node):
                 cv2.rectangle(cv_image, (xmin, ymin), (xmax, ymax), GREEN, 2)
                 if label == 0:
                     cv2.rectangle(cv_image, (xmin, ymin), (xmax, ymax), GREEN, 2)
-                    cv2.putText(cv_image, 'arms'+ ' ' + str(round(confidence, 2))+'%', (xmin, ymin), cv2.FONT_HERSHEY_PLAIN, 1.5, BLUE, 2)
+                    cv2.putText(cv_image, 'arms'+ ' ' + str(self.depth)+'cm', (xmin, ymin), cv2.FONT_HERSHEY_PLAIN, 1.5, BLUE, 2)
                 else:
                     cv2.rectangle(cv_image, (xmin, ymin), (xmax, ymax), RED, 2)
-                    cv2.putText(cv_image, 'legs'+ ' ' + str(round(confidence, 2))+'%', (xmin, ymin), cv2.FONT_HERSHEY_PLAIN, 1.5, BLUE, 2)
+                    cv2.putText(cv_image, 'legs'+ ' ' + str(self.depth)+'cm', (xmin, ymin), cv2.FONT_HERSHEY_PLAIN, 1.5, BLUE, 2)
                 # center coordinate 
                 center_x = (xmin + xmax) // 2
                 center_y = (ymin + ymax) // 2
@@ -73,10 +81,10 @@ class CenterPublisher(Node):
             self.center_pub.publish(self.center_coord_list)
 
             # Calculate fps
-            end_time = datetime.datetime.now()
-            total = (end_time - start_time).total_seconds()
-            fps = f'FPS: {1 / total:.2f}'
-            cv2.putText(cv_image, fps, (10, 10), cv2.FONT_HERSHEY_PLAIN, 1, BLUE, 2)
+            # end_time = datetime.datetime.now()
+            # total = (end_time - start_time).total_seconds()
+            # fps = f'FPS: {1 / total:.2f}'
+            # cv2.putText(cv_image, fps, (10, 10), cv2.FONT_HERSHEY_PLAIN, 1, BLUE, 2)
 
             cv2.imshow("Recieved Color Image", cv_image)
             self.key = cv2.waitKey(1) & 0xFF
@@ -103,6 +111,9 @@ class CenterPublisher(Node):
 
             self.center_coord_list.msg_seq = self.count
             self.center_coord_list.coord_list.append(center_coord)
+
+    def listener_callback(self, msg):
+        self.depth = msg.data
 
 def main(args=None):
     rp.init(args=args)
