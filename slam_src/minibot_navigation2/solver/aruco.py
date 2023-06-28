@@ -11,7 +11,7 @@ class ArUcoDetector(Node):
         super().__init__('arucodetector')
         self.subscription = self.create_subscription(
             Image,
-            'image_raw',
+            '/image/color',
             self.image_callback,
             10
         )
