@@ -105,10 +105,10 @@ int main(void)
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
 
-  float_t fre[500];
+  float_t fre[700];
   uint16_t period[500];
-  float_t len = 500.0;
-  float_t fre_max = 500.0;
+  float_t len = 700.0;
+  float_t fre_max = 700.0;
   float_t fre_min = 0.0;
   float_t flexible = 4;
 
@@ -162,10 +162,19 @@ int main(void)
 
 
 
-//	  __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, 200);
-//	  __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, 200);
-//	  __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, 200);
-//	  __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_4, 200);
+//	  __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, 700);
+//	  __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, 700);
+//	  __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, 700);
+//	  __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_4, 700);
+//
+//	  HAL_Delay(1700-1);
+//
+//	  __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_1, 0);
+//	  __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_2, 0);
+//	  __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_3, 0);
+//	  __HAL_TIM_SET_COMPARE(&htim8, TIM_CHANNEL_4, 0);
+//
+//	  HAL_Delay(1700-1);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
