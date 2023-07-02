@@ -161,8 +161,9 @@ cython_debug/
 
 #ignore folder
 .metadata/
-stm32/stm32_syh/.metadata/
-stm32/stm32_syh/encoder_test/.metadata/
-stm32/stm32_syh/motor_test/.metadata/
-stm32/stm32_syh/motor_control/.metadata/
-stm32/stm32_syh/uart_test/.metadata/
+stm32/.metadata/
+stm32/motor_control/.metadata/
+stm32/imu_test/.metadata/
+stm32/profile_test/.metadata/
+
+
