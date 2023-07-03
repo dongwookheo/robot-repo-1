@@ -62,8 +62,8 @@ Wheel : differential steering
 ### 사용된 기술
 
 #### **YOLO**
-돌발상황시 사람의 전체가 아닌 팔과 다리만이 우선적으로 보이기에 팔과 다리만을 <br>
-인식하는 모델 학습 및 라벨링 적용 <br>
+돌발상황시 사람의 전체가 아닌 팔과 다리가 우선적으로 보이므로 <br>
+팔과 다리만을 인식하는 모델 학습 및 라벨링 적용 <br>
 <img src="./image/YOLO_Custom.jpg" alt="이미지" width="320" height="320">
 <b align="left"> <br>
 
