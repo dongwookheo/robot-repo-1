@@ -102,5 +102,52 @@ $ ros2 run navi_test_package navi_test_node
 ```
 
 ### 3nd scenario
+```shell
+$ ros2 launch minibot_bringup bringup_robot.launch.py
+```
+```shell
+$ ros2 launch minibot_navigation2 bringup_launch.py map:=`ros2 pkg prefix minibot_navigation2`/share/minibot_navigation2/maps/<map-name>.yaml
+```
+```shell
+$ rviz2 -d `ros2 pkg prefix minibot_navigation2`/share/minibot_navigation2/rviz/nav2_view.rviz
+```
+#### check cctv_dev
+```shell
+$ ros2 run cctv_person_detect webcam
+```
+```shell
+$ ros2 run cctv_person_detect coordinate_publisher
+```
+#### move to navi_test  / source install/setup.bash
+```shell
+$ ros2 run navi_test_package navi_test_node
+```
+
+### 4nd scenario
+```shell
+$ ros2 launch minibot_bringup bringup_robot.launch.py
+```
+```shell
+$ ros2 launch minibot_navigation2 bringup_launch.py map:=`ros2 pkg prefix minibot_navigation2`/share/minibot_navigation2/maps/<map-name>.yaml
+```
+```shell
+$ rviz2 -d `ros2 pkg prefix minibot_navigation2`/share/minibot_navigation2/rviz/nav2_view.rviz
+```
+#### check realsense_dev
+```shell
+$ ros2 run depth_package realsense_publisher
+```
+```shell
+$ ros2 run depth_package center_publisher
+```
+```shell
+$ ros2 run depth_package depth_subscriber
+```
+#### move to navi_test  / source install/setup.bash
+```shell
+$ ros2 run navi_test_package navi_test_node
+```
+
+
 
 
