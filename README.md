@@ -59,11 +59,25 @@ Wheel : differential steering
 
 <위 2개 너무 긴거 같아서 따로 시스템 dev로 뺄까 고민 중>
 
-### 비전 처리
+### 사용된 기술
 
-#### YOLO
+#### **YOLO**
+돌발상황시 사람의 전체가 아닌 팔과 다리만이 우선적으로 보이기에 팔과 다리만을 <br>
+인식하는 모델 학습 및 라벨링 적용 <br>
+<img src="./image/YOLO_Custom.jpg" alt="이미지" width="320" height="320">
+<b align="left"> <br>
 
-#### 컴퓨터 비전
+ Model | Trained |
+|-------|---------|
+| recognize Arm and Leg | [download (245MB)](https://drive.google.com/file/d/1DHGC-n0PIB-iuSVyvKAjuUM-vJ_csmHB/view?usp=sharing) |
+
+
+#### **컴퓨터 비전**
+<img src="./image/camera_system.png" alt="이미지" width="649" height="320"> <br>
+
+## [글로벌 카메라처리]()  <br>
+
+## [로컬 카메라처리]() <br>
 
 
 ### 하드웨어
