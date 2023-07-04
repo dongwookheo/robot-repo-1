@@ -85,8 +85,8 @@ Wheel : differential steering
 ### Navigation & SLAM
 #### [주행 시나리오 시연 때 사용한 명령어 정리](https://github.com/addinedu-amr-2th/robot-repo-1/tree/slam_dev)
 #### 1번, 2번 시나리오 
-![image]([https://github.com/addinedu-amr-2th/robot-repo-1/assets/124949127/68e4a96a-946b-4a9f-ac6c-c85393a2e92a](https://github.com/addinedu-amr-2th/robot-repo-1/blob/master/image/Untitled%20(1).gif))
+<img src="https://github.com/addinedu-amr-2th/robot-repo-1/assets/124949127/68e4a96a-946b-4a9f-ac6c-c85393a2e92a](https://github.com/addinedu-amr-2th/robot-repo-1/blob/master/image/Untitled%20(1).gif" alt="이미지" width="640" height="240"> <br>
 #### 3번 시나리오
-![image]([https://github.com/addinedu-amr-2th/robot-repo-1/assets/124949127/5ecf82ad-d4a4-4a66-93fa-61b2442d2500](https://github.com/addinedu-amr-2th/robot-repo-1/blob/master/image/Untitled%20(2).gif))
+<img src="https://github.com/addinedu-amr-2th/robot-repo-1/assets/124949127/68e4a96a-946b-4a9f-ac6c-c85393a2e92a](https://github.com/addinedu-amr-2th/robot-repo-1/blob/master/image/Untitled%20(2).gif" alt="이미지" width="640" height="240"> <br>
 #### 4번 시나리오
-![image]([https://github.com/addinedu-amr-2th/robot-repo-1/assets/124949127/32993b64-6480-4d21-a8dc-a691f9e85a76](https://github.com/addinedu-amr-2th/robot-repo-1/blob/master/image/Untitled%20(1).gif)https://github.com/addinedu-amr-2th/robot-repo-1/blob/master/image/Untitled%20(3).gif)
+<img src="https://github.com/addinedu-amr-2th/robot-repo-1/assets/124949127/68e4a96a-946b-4a9f-ac6c-c85393a2e92a](https://github.com/addinedu-amr-2th/robot-repo-1/blob/master/image/Untitled%20(3).gif" alt="이미지" width="640" height="240"> <br>
