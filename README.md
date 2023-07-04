@@ -75,7 +75,7 @@ Wheel : differential steering
 #### **컴퓨터 비전**
 <img src="./image/camera_system.png" alt="이미지" width="649" height="320"> <br>
 
-**[글로벌 카메라처리]()**  <br>
+**[글로벌 카메라처리](https://github.com/addinedu-amr-2th/robot-repo-1/blob/cctv_dev/README.md)**  <br>
 
 **[로컬 카메라처리]()** <br>
 
