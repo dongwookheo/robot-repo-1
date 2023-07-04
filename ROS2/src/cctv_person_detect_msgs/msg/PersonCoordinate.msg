@@ -1,0 +1,3 @@
+float32 person_x
+float32 person_y
+float32 person_z
