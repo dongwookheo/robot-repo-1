@@ -85,8 +85,8 @@ Wheel : differential steering
 ### Navigation & SLAM
 #### [주행 시나리오 시연 때 사용한 명령어 정리](https://github.com/addinedu-amr-2th/robot-repo-1/tree/slam_dev)
 #### 1번, 2번 시나리오 
-
+<img src="./image/Untitled (1).gif" alt="이미지" width="640" height="240"> <br>
 #### 3번 시나리오
-
+<img src="./image/Untitled (2).gif" alt="이미지" width="640" height="240"> <br>
 #### 4번 시나리오
-
+<img src="./image/Untitled (3).gif" alt="이미지" width="640" height="240"> <br>
