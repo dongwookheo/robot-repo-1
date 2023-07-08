@@ -10,6 +10,9 @@ minibot navigation2 패키지 빼고 ROS2/src 폴더에 넣는다.
 ```shell
 $ colcon build
 ```
+```shell
+$ source install/setup.bash
+```
 
 # minibot_navigation2
  - Mapping
