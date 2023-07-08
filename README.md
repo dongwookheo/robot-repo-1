@@ -83,6 +83,9 @@ Wheel : differential steering
 ### 하드웨어
 메카넘 휠 로봇을 teleop_twist_keyboard를 이용해 주행<br>
 ```shell
+$ ros2 run serial_py2stm serial_py2stm
+```
+```shell
 $ ros2 run teleop_twist_keyboard teleop_twist_keyboard
 ```
 <img src="./image/image45.gif" alt="이미지" width="320" height="300"> <br>
@@ -94,7 +97,7 @@ $ ros2 run teleop_twist_keyboard teleop_twist_keyboard
 적용O   
 
 ### Navigation & SLAM
-#### [주행 시나리오 시연 때 사용한 명령어 정리](https://github.com/addinedu-amr-2th/robot-repo-1/tree/slam_dev)
+#### [주행 시나리오 시연 때 사용한 명령어 정리](https://github.com/addinedu-amr-2th/robot-repo-1/blob/master/ROS2/README.md)
 #### 1번, 2번 시나리오 
 <img src="./image/Untitled (1).gif" alt="이미지" width="640" height="240"> <br>
 #### 3번 시나리오
