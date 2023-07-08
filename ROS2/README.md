@@ -91,7 +91,7 @@ $ rviz2 -d `ros2 pkg prefix minibot_navigation2`/share/minibot_navigation2/rviz/
 ```shell
 $ python3 button.py
 ```
-#### source install/setup.bash
+
 ```shell
 $ ros2 run navi_test_package navi_test_node
 ```
@@ -110,7 +110,7 @@ $ rviz2 -d `ros2 pkg prefix minibot_navigation2`/share/minibot_navigation2/rviz/
 ```shell
 $ python3 aruco.py
 ```
-#### source install/setup.bash
+
 ```shell
 $ ros2 run navi_test_package navi_test_node
 ```
@@ -132,7 +132,7 @@ $ ros2 run cctv_person_detect webcam
 ```shell
 $ ros2 run cctv_person_detect coordinate_publisher
 ```
-#### source install/setup.bash
+
 ```shell
 $ ros2 run navi_test_package navi_test_node
 ```
@@ -157,7 +157,7 @@ $ ros2 run depth_package center_publisher
 ```shell
 $ ros2 run depth_package depth_subscriber
 ```
-#### source install/setup.bash
+
 ```shell
 $ ros2 run navi_test_package navi_test_node
 ```
