@@ -1,5 +1,16 @@
 # 프로젝트에서 사용한 명령어 정리
 
+# minibot
+**[minibot](https://github.com/byeongkyu/pinklab_minibot_robot)**  <br>
+```shell
+$ git clone https://github.com/byeongkyu/pinklab_minibot_robot.git
+```
+minibot navigation2 패키지 빼고 ROS2/src 폴더에 넣는다.
+그 후 ROS2 폴더에서
+```shell
+$ colcon build
+```
+
 # minibot_navigation2
  - Mapping
  - navigation
